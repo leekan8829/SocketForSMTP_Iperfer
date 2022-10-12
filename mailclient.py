@@ -1,10 +1,17 @@
 from socket import *
 import time
 
+'''
+This is Iperfer by python
+'''
+
+
 endmsg = "\r\n.\r\n"
 
-mailserver = ("mail.ntust.edu.tw",25)
-mailserver = ("smtp.mailtrap.io",2525)
+mailserver_name = str(input("smtp server name: "))
+mailserver_port = int(input("smtp server port: "))
+mailserver = (mailserver_name,mailserver_port)
+
 clientSocket = socket(AF_INET,SOCK_STREAM)
 clientSocket.connect(mailserver)
 
@@ -25,8 +32,10 @@ else:
     print("220 mail.ntust.edu.tw")
 
 
-helocommand = "EHLO Kan\r\n"
-# helocommand = input("input msg")
+#helocommand = "EHLO Kan\r\n"
+helocommand = input("input command: ")
+clientSocket.send(helocommand.encode())
+helocommand = "\r\n"
 clientSocket.send(helocommand.encode())
 
 recv = clientSocket.recv(1024)
@@ -37,41 +46,24 @@ if recv[:3] != '250':
 else:
     print(recv)
 
-AUTHCommand = "AUTH LOGIN\r\n"
-clientSocket.send(AUTHCommand.encode())
-recv = clientSocket.recv(1024)
-recv = recv.decode()
-print(recv)
 
-AUTHCommand = "MzhmZTcyNjJlOTNlY2M=\r\n"
-clientSocket.send(AUTHCommand.encode())
-recv = clientSocket.recv(1024)
-recv = recv.decode()
-print(recv)
-
-AUTHCommand = "YzcxMWNhMWRkMWQ0NWI=\r\n"
-clientSocket.send(AUTHCommand.encode())
-recv = clientSocket.recv(1024)
-recv = recv.decode()
-print(recv)
-
-print("Send")
-#fromCommand = "MAIL FROM:<kan@mail.ntust.edu.tw>\r\n"
-fromCommand = "MAIL FROM:<to@example.com>\r\n"
+#input MAIL From 
+fromMail = str(input("MAIL FROM: "))
+fromCommand = "MAIL FROM:<"+fromMail+">\r\n"
 clientSocket.send(fromCommand.encode())
 recv = clientSocket.recv(1024)
 recv = recv.decode()
 print(recv)
 
-print("RCPT")
-#toCommand = "RCPT TO:<M11115057@mail.ntust.edu.tw>\r\n"
-toCommand = "RCPT TO:<to@example.com>\r\n"
+#input MAIL TO 
+toMail = str(input("RCPT TO: "))
+toCommand = "RCPT TO:<"+toMail+">\r\n"
 clientSocket.send(toCommand.encode())
 recv = clientSocket.recv(1024)
 recv = recv.decode()
 print(recv)
 
-print("DATA")
+#SEND DATA!
 dataCommand = "DATA\r\n"
 clientSocket.send(dataCommand.encode())
 recv = clientSocket.recv(1024)
@@ -79,14 +71,22 @@ recv = recv.decode()
 print(recv)
 
 
-msg = "To: to@example.com \r\n"
+msg = "To: "+toMail+" \r\n"
 clientSocket.send(msg.encode())
 
-msg = "From: from@example.com \r\n"
+msg = "From: "+fromMail+" \r\n"
 clientSocket.send(msg.encode())
 
-msg = "Subject: Hello world!\r\n"
+#input Mail sbject
+subject = str(input("Subject: "))
+msg = "Subject: "+subject+"\r\n"
 clientSocket.send(msg.encode())
+
+#input Mail content
+content = str(input("Content: "))
+msg = "\r\n " + content + "\r\n"
+clientSocket.send(msg.encode())
+
 
 clientSocket.send(endmsg.encode())
 recv = clientSocket.recv(1024)
